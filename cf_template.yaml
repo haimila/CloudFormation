@@ -7,4 +7,10 @@ Resources:
     Properties:
       BucketName: mitja-cftemplate-bucket
 
+  munjono:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: mitjan-jono
+
+
 
