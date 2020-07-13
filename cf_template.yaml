@@ -1,0 +1,10 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Mitjan CloudFormation -testitemplate
+
+Resources:
+  mitjabucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: mitja-cftemplate-bucket
+
+
