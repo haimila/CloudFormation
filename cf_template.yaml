@@ -12,5 +12,27 @@ Resources:
     Properties:
       QueueName: mitjan-jono
 
+  ec2eka:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-06ad9296e6cf1e3cf
+      InstanceType: t2.micro
+      Tags:
+        - Key: Name
+          Value: mitja-cf-ec2
 
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Name: mitja-cf-lb
+      Scheme: internet-facing
+      SubnetMappings:
+        - SubnetId: subnet-05fa212e
+        - SubnetId: subnet-bac919f2
+        - SubnetId: subnet-b10a08ea
+
+Outputs:
+  LoadBalancerDNS:
+    Value: !GetAtt LoadBalancer.DNSName
 
