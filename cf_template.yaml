@@ -20,6 +20,28 @@ Resources:
       Tags:
         - Key: Name
           Value: mitja-cf-ec2
+      SecurityGroupIds:
+        - !Ref ec2sg
+
+  ec2sg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ec2 security group
+      GroupName: mitja-cf-ec2-sg
+      Tags:
+        - Key: Name
+          Value: mitja-cf-ec2-sg
+      VpcId: vpc-16908771
+
+  lbsg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: lb security group
+      GroupName: mitja-cf-lb-sg
+      Tags:
+        - Key: Name
+          Value: mitja-cf-lb-sg
+      VpcId: vpc-16908771
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -27,10 +49,13 @@ Resources:
       IpAddressType: ipv4
       Name: mitja-cf-lb
       Scheme: internet-facing
+      SecurityGroups:
+        - !Ref lbsg
       SubnetMappings:
         - SubnetId: subnet-05fa212e
         - SubnetId: subnet-bac919f2
         - SubnetId: subnet-b10a08ea
+
 
 Outputs:
   LoadBalancerDNS:
