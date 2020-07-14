@@ -12,17 +12,6 @@ Resources:
     Properties:
       QueueName: mitjan-jono
 
-  ec2eka:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-06ad9296e6cf1e3cf
-      InstanceType: t2.micro
-      Tags:
-        - Key: Name
-          Value: mitja-cf-ec2
-      SecurityGroupIds:
-        - !Ref ec2sg
-
   ec2sg:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -43,6 +32,11 @@ Resources:
     Properties:
       GroupDescription: lb security group
       GroupName: mitja-cf-lb-sg
+      SecurityGroupIngress:
+        - FromPort: 80
+          ToPort: 80
+          IpProtocol: Tcp
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: mitja-cf-lb-sg
@@ -79,6 +73,38 @@ Resources:
       Protocol: HTTP
       TargetType: instance
       VpcId: vpc-16908771
+
+  AutoScaling:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: mitja-asg-cf
+      LaunchConfigurationName: !Ref LaunchConfig
+      MaxSize: 4
+      MinSize: 1
+      TargetGroupARNs:
+        - !Ref ELBTargetGroup
+      VPCZoneIdentifier:
+        - subnet-05fa212e
+        - subnet-bac919f2
+        - subnet-b10a08ea
+
+  LaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-06ad9296e6cf1e3cf
+      InstanceType: t2.micro
+      KeyName: mitjanavain-tokyo
+      LaunchConfigurationName: mitja-launch-config
+      SecurityGroups:
+        - !Ref ec2sg
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - "\n"
+            - - "#!/bin/bash"
+              - "amazon-linux-extras install epel"
+              - "amazon-linux-extras install nginx1"
+              - "systemctl start nginx"
 
 Outputs:
   LoadBalancerDNS:
