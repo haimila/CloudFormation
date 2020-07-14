@@ -30,7 +30,8 @@ Resources:
       GroupName: mitja-cf-ec2-sg
       SecurityGroupIngress:
         - FromPort: 80
-          IpProtocol: -1
+          ToPort: 80
+          IpProtocol: Tcp
           SourceSecurityGroupId: !Ref lbsg
       Tags:
         - Key: Name
@@ -60,6 +61,24 @@ Resources:
         - SubnetId: subnet-bac919f2
         - SubnetId: subnet-b10a08ea
 
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ELBTargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  ELBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+      VpcId: vpc-16908771
 
 Outputs:
   LoadBalancerDNS:
