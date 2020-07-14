@@ -5,7 +5,7 @@ Resources:
   mitjabucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: mitja-cftemplate-bucket
+      BucketName: mitja-cf-bucket
 
   munjono:
     Type: AWS::SQS::Queue
@@ -28,6 +28,10 @@ Resources:
     Properties:
       GroupDescription: ec2 security group
       GroupName: mitja-cf-ec2-sg
+      SecurityGroupIngress:
+        - FromPort: 80
+          IpProtocol: -1
+          SourceSecurityGroupId: !Ref lbsg
       Tags:
         - Key: Name
           Value: mitja-cf-ec2-sg
