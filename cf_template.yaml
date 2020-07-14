@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Mitjan CloudFormation -testitemplate
 
 Resources:
+
+  VPCstackki:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/mitja-cf-vpc/cf-verkko.template
+
   mitjabucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -25,7 +31,7 @@ Resources:
       Tags:
         - Key: Name
           Value: mitja-cf-ec2-sg
-      VpcId: vpc-16908771
+      VpcId: !GetAtt VPCstackki.Outputs.Veepeecee
 
   lbsg:
     Type: AWS::EC2::SecurityGroup
@@ -40,7 +46,7 @@ Resources:
       Tags:
         - Key: Name
           Value: mitja-cf-lb-sg
-      VpcId: vpc-16908771
+      VpcId: !GetAtt VPCstackki.Outputs.Veepeecee
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -51,9 +57,9 @@ Resources:
       SecurityGroups:
         - !Ref lbsg
       SubnetMappings:
-        - SubnetId: subnet-05fa212e
-        - SubnetId: subnet-bac919f2
-        - SubnetId: subnet-b10a08ea
+        - SubnetId: !GetAtt VPCstackki.Outputs.SubnetMitja1
+        - SubnetId: !GetAtt VPCstackki.Outputs.SubnetMitja2
+        - SubnetId: !GetAtt VPCstackki.Outputs.SubnetMitja3
 
   LoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -72,7 +78,7 @@ Resources:
       Port: 80
       Protocol: HTTP
       TargetType: instance
-      VpcId: vpc-16908771
+      VpcId: !GetAtt VPCstackki.Outputs.Veepeecee
 
   AutoScaling:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -84,9 +90,9 @@ Resources:
       TargetGroupARNs:
         - !Ref ELBTargetGroup
       VPCZoneIdentifier:
-        - subnet-05fa212e
-        - subnet-bac919f2
-        - subnet-b10a08ea
+        - !GetAtt VPCstackki.Outputs.SubnetMitja1
+        - !GetAtt VPCstackki.Outputs.SubnetMitja2
+        - !GetAtt VPCstackki.Outputs.SubnetMitja3
 
   LaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
